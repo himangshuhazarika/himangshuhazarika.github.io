@@ -652,7 +652,7 @@
     width:calc(100% - 64px);
     margin:0 !important;
     transform-origin:50% 100%;
-    transition:transform 1.6s cubic-bezier(.22,.61,.36,1), opacity 1.2s ease, filter 1.2s ease;
+    transition:transform 1.3s cubic-bezier(.45,.05,.25,1), opacity 1.1s ease, filter 1.1s ease;
     will-change:transform;
     touch-action:pan-y;
   }
@@ -967,7 +967,7 @@
   .foot-note{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);opacity:0.7;}
 
   /* reveal on scroll */
-  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease, transform .5s ease;}
+  .reveal{opacity:0;transform:translateY(8px);transition:opacity 1s ease, transform 1s ease;}
   .reveal.in{opacity:1;transform:translateY(0);}
 
   a:focus-visible, .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
@@ -3055,7 +3055,7 @@ if (nsEmbedEl) {
         onEnter: function(batch){
           gsap.to(batch, Object.assign({
             opacity: 1, x: 0, y: 0, scale: 1,
-            duration: 0.7, ease: 'power3.out', stagger: 0.07, overwrite: true,
+            duration: 1.1, ease: 'power2.out', stagger: 0.1, overwrite: true,
             clearProps: 'opacity,transform',
             onComplete: function(){ release(batch); }
           }, extra || {}));
@@ -3063,26 +3063,25 @@ if (nsEmbedEl) {
       });
     }
 
-    batchIn('.section:not(.hero) .eyebrow, #contact .eyebrow', { x: -24 });
-    batchIn('.about-text', { y: 24 }, { stagger: 0.12 });
-    batchIn('.tag-label', { x: -16 });
-    batchIn('.tag', { y: 14, scale: 0.94 }, { duration: 0.5, stagger: 0.035 });
-    batchIn('.job', { x: -30 }, { stagger: 0.14 });
-    batchIn('.work-card', { y: 44 }, { stagger: 0.1 });
-    batchIn('.case-study-card', { y: 44 }, { stagger: 0.12 });
-    batchIn('#contact .display', { y: 36 }, { duration: 0.9 });
-    batchIn('#contact .contact-line, #contact .foot-links a', { y: 20 });
+    batchIn('.section:not(.hero) .eyebrow, #contact .eyebrow', { y: 10 });
+    batchIn('.about-text', { y: 12 }, { stagger: 0.14 });
+    batchIn('.tag-label', { y: 8 });
+    batchIn('.tag', { y: 8 }, { duration: 0.9, stagger: 0.04 });
+    batchIn('.job', { y: 12 }, { stagger: 0.16 });
+    /* project + case-study cards live in the swipe stack, which fades in with its section */
+    batchIn('#contact .display', { y: 14 }, { duration: 1.2 });
+    batchIn('#contact .contact-line, #contact .foot-links a', { y: 10 });
 
-    /* section headings: left-to-right wipe */
+    /* section headings: gentle fade-up */
     $('.section:not(.hero) h2').forEach(function(h){
-      gsap.set(h, { clipPath: 'inset(0% 100% 0% 0%)', y: 18, opacity: 0 });
+      gsap.set(h, { y: 10, opacity: 0 });
       track([h]);
       ScrollTrigger.create({
         trigger: h, start: 'top 88%', once: true,
         onEnter: function(){
           gsap.to(h, {
-            clipPath: 'inset(0% 0% 0% 0%)', y: 0, opacity: 1,
-            duration: 1, ease: 'power3.inOut',
+            y: 0, opacity: 1,
+            duration: 1.2, ease: 'power2.out',
             clearProps: 'clipPath,transform,opacity',
             onComplete: function(){ release([h]); }
           });
@@ -3164,7 +3163,7 @@ if (nsEmbedEl) {
       var step = Math.min(26, w * 0.04);
       var t, o = 1;
       if (d === 0){ t = 'translateX(0) scale(1)'; }
-      else if (d === n - 1 && n > 3){ t = 'translateX(-115%) rotate(-8deg)'; o = 0; }          // just swiped away (to the left)
+      else if (d === n - 1 && n > 3){ t = 'translateX(-44px) rotate(-1.5deg) scale(.98)'; o = 0; }          // just swiped away (to the left)
       else if (d <= 2){ t = 'translateX(' + (d*step) + 'px) translateY(' + (-d*6) + 'px) scale(' + (1 - d*0.045) + ')'; }
       else { t = 'translateX(' + (3*step) + 'px) translateY(-18px) scale(.86)'; o = 0; }
       s.style.transform = t;
@@ -3836,7 +3835,13 @@ if (nsEmbedEl) {
         console.log('%c⌨️   JUST TYPE (anywhere on the page)', head);
         console.log('%chire%c confetti → contact   %ccoffee%c ☕ rain   %chello%c 👋   %cdark%c / %clight%c   %c404%c fake error', key, txt, key, txt, key, txt, key, txt, key, txt, key, txt);
         console.log('%c🧩  THE SKILLS SECTION IS A PLAYGROUND', head);
-        console.log('%cclick any tag ×5%c level it up  ·  hover a tag to see how skills connect\ntriple-click the "Capabilities" heading%c or type %cgravity%c  ·  type %crpg%c for a character sheet\nlinger there for a few seconds… or type %cclient%c', key, txt, txt, key, txt, key, txt, key, txt);
+        console.log('%cclick any tag ×5%c  →  level it up (LV2 … MAX). Level up all 22 for a surprise.', key, txt);
+        console.log('%chover a tag%c  →  see how my skills connect, with dashed constellation lines.', key, txt);
+        console.log('%ctriple-click "Capabilities"%c or type %cgravity%c  →  the tags fall. Grab and toss them. Esc puts them back.', key, txt, key, txt);
+        console.log('%clinger in the section%c or type %cclient%c  →  a very familiar "Client" cursor shows up with feedback.', key, txt, key, txt);
+        console.log('%ctype rpg%c  →  my character sheet (stats are 100%% made up).', key, txt);
+        console.log('%c🪔  THE THEME CORD', head);
+        console.log('%cpull the cord, top-right%c  →  light / dark. It swings. You\'re welcome.', key, txt);
         console.log('%c💤  PATIENCE', head);
         console.log('%cleave the page alone for 30 seconds. Someone will come say hi.', txt);
         console.log('%c🧪  LAZY? THE CONSOLE WORKS TOO', head);
