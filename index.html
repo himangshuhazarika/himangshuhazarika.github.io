@@ -995,6 +995,10 @@
   .postcredits b::after{ content:"▍"; margin-left:2px; color:#93B4E0; animation:pcCaret 1s steps(1) infinite; }
   .postcredits.done b::after{ display:none; }
   .postcredits .pc-roll{ position:relative; height:150px; margin-top:12px; overflow:hidden; -webkit-mask-image:linear-gradient(transparent, #000 18%, #000 82%, transparent); mask-image:linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+  .postcredits{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:pan-y; }
+  .postcredits.held{ cursor:grabbing; border-color:rgba(147,180,224,.95); }
+  .postcredits .pc-hint{ margin-top:10px; font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:#93B4E0; opacity:.45; transition:opacity .3s ease; }
+  .postcredits.held .pc-hint{ opacity:.9; }
   .postcredits .pc-list{ position:absolute; left:0; right:0; top:0; transform:translateY(160px); }
   .postcredits p{ margin:0 0 26px; font-size:12px; line-height:1.6; letter-spacing:.05em; color:#B7C4BA; }
   @keyframes pcCaret{ 50%{ opacity:0; } }
@@ -3417,6 +3421,7 @@ if (nsEmbedEl) {
         console.log('%cdeadpool%c  →  the page starts talking back.', key, txt);
         console.log('%cgroot%c  →  every word becomes… you know.', key, txt);
         console.log('%cironman%c  →  repulsor cursor. Click to blast.', key, txt);
+        console.log('%cmiles%c  →  spider-verse mode: comic dots, sound-word pops, a leap of faith.', key, txt);
         console.log('%c🍥  ANIME', head);
         console.log('%cnaruto%c  →  shadow clones in a puff of smoke.', key, txt);
         console.log('%ctotoro%c  →  rain and a leaf umbrella (pairs with sakura).', key, txt);
@@ -3723,7 +3728,7 @@ if (nsEmbedEl) {
   });
 
   /* ---------- hook into typed words + console ---------- */
-  window.__skills = { gravity: function(){ grav ? stopGravity() : startGravity(); }, rpg: openRpg, client: function(){ runClient(true); } };
+  window.__skills = { stopAll: function(){ abortClient(); closeRpg(); if (grav) stopGravity(); }, gravity: function(){ grav ? stopGravity() : startGravity(); }, rpg: openRpg, client: function(){ runClient(true); } };
   if (fx.WORDS){
     fx.WORDS.gravity = function(){ sec.scrollIntoView({ behavior:'smooth', block:'center' }); setTimeout(function(){ grav ? stopGravity() : startGravity(); }, 500); };
     fx.WORDS.rpg = function(){ openRpg(); };
@@ -4023,7 +4028,7 @@ if (nsEmbedEl) {
       'Rated PG-13 for strong language in the comments (“can we try blue?”).',
       'Next project loading… stuck at 99% (the last 1% is the kerning).'
     ], pcLast = -1, pcType = 0;
-    pc.innerHTML = '<small>— post-credits scene —</small><b></b><div class="pc-roll"><div class="pc-list"></div></div>';
+    pc.innerHTML = '<small>— post-credits scene —</small><b></b><div class="pc-roll"><div class="pc-list"></div></div><div class="pc-hint">press &amp; hold to pause</div>';
     foot.appendChild(pc);
     var pcB = pc.querySelector('b'), pcP = pc.querySelector('.pc-list'), pcAnim = null, pcTimer = 0, pcShown = false;
     function atBottom(){ return scrollY + innerHeight >= document.documentElement.scrollHeight - 8; }
@@ -4036,10 +4041,16 @@ if (nsEmbedEl) {
       pcType = setInterval(function(){ pcB.textContent = PC_LINE.slice(0, ++i); if (i >= PC_LINE.length){ clearInterval(pcType); pc.classList.add('done'); pcRoll(); } }, 70);
     }
     function pcRoll(){
-      var rollH = pcP.parentNode.clientHeight, listH = pcP.scrollHeight, dur = (rollH + listH)/46*1000;
+      var rollH = pcP.parentNode.clientHeight, listH = pcP.scrollHeight, dur = (rollH + listH)/24*1000;
       if (pcAnim) pcAnim.cancel();
       pcAnim = pcP.animate([{ transform:'translateY(' + rollH + 'px)' }, { transform:'translateY(' + (-listH) + 'px)' }], { duration:dur, easing:'linear', fill:'forwards' });
     }
+    function pcPause(){ if (pcAnim && pcAnim.playState === 'running') pcAnim.pause(); pc.classList.add('held'); }
+    function pcResume(){ if (pcAnim && pcAnim.playState === 'paused') pcAnim.play(); pc.classList.remove('held'); }
+    pc.addEventListener('pointerdown', function(e){ if (e.pointerType === 'mouse' && e.button !== 0) return; pcPause(); });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function(t){ pc.addEventListener(t, pcResume); });
+    pc.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+    window.__pcStop = function(){ if (pcAnim) pcAnim.cancel(); clearInterval(pcType); pc.classList.remove('on', 'held'); pc.setAttribute('aria-hidden', 'true'); };
     function pcHide(){ if (pcAnim) pcAnim.cancel(); pcShown = false; clearInterval(pcType); pc.classList.remove('on'); pc.setAttribute('aria-hidden', 'true'); }
     window.__pcShow = function(){ pcShow(); pc.scrollIntoView({ behavior:'smooth', block:'center' }); };
     function armPc(){
@@ -4132,6 +4143,17 @@ html.th-real{ filter:hue-rotate(150deg) saturate(1.7) contrast(1.05); }
 body.wakanda{ --accent:#9a6bff; --accent-soft:rgba(154,107,255,.16); }
 body.wakanda h1, body.wakanda h2{ text-shadow:0 0 18px rgba(154,107,255,.55); }
 body.wakanda .tag, body.wakanda .btn{ box-shadow:0 0 14px rgba(154,107,255,.35); }
+
+
+/* ---- MILES / SPIDER-VERSE ---- */
+.sv-wipe{ z-index:9260; background:linear-gradient(115deg,#ff2d78 0 50%,#1ec8ff 50% 100%); clip-path:polygon(0 0,0 0,0 100%,0 100%); }
+.sv-dots{ z-index:9120; opacity:0; transition:opacity 1s ease; background-image:radial-gradient(circle,rgba(255,45,120,.55) 1.3px,transparent 1.7px); background-size:7px 7px; mix-blend-mode:multiply; }
+.sv-dots.c{ background-image:radial-gradient(circle,rgba(30,200,255,.55) 1.3px,transparent 1.7px); background-position:3.5px 3.5px; z-index:9121; }
+.sv-dots.on{ opacity:.32; }
+.sv-edge{ z-index:9110; opacity:0; transition:opacity 1.2s ease; box-shadow:inset 0 0 0 6px rgba(255,45,120,.0), inset 0 0 120px rgba(255,45,120,.28), inset 0 0 160px rgba(30,200,255,.25); }
+.sv-edge.on{ opacity:1; }
+body.sv{ --accent:#e8245f; --accent-soft:rgba(232,36,95,.14); text-shadow:2px 2px 0 rgba(255,45,120,.4), -2px -2px 0 rgba(30,200,255,.4); }
+.sv-pop{ position:fixed; z-index:9290; pointer-events:none; translate:-50% -50%; padding:30px 34px; background:#ffe14d; clip-path:polygon(50% 0,61% 13%,79% 5%,76% 23%,96% 24%,84% 40%,100% 52%,82% 60%,92% 79%,72% 76%,67% 97%,54% 83%,40% 99%,34% 78%,13% 85%,22% 64%,1% 56%,18% 42%,5% 22%,27% 26%,30% 7%,44% 19%); font:900 clamp(20px,4.4vw,34px)/1 'Space Grotesk',Impact,sans-serif; letter-spacing:.02em; color:#111; text-shadow:2px 2px 0 #ff2d78, -1px -1px 0 #1ec8ff; white-space:nowrap; }
 
 /* ---- DEADPOOL ---- */
 .dp-burst{ z-index:9250; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(0,0,0,.0) 20%, rgba(140,0,20,.45)); opacity:0; }
@@ -4262,7 +4284,15 @@ body.dn-open{ overflow:hidden; }
   }
   if (!fx.ext) fx.ext = [];
   fx.ext.push(function(keep){ Object.keys(M).forEach(function(n){ if (n !== keep && !(n === 'totoro' && keep === 'sakura')) M[n].stop(); }); });
-  window.addEventListener('keydown', function(e){ if (e.key === 'Escape') Object.keys(M).forEach(function(n){ M[n].stop(); }); });
+  window.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    Object.keys(M).forEach(function(n){ M[n].stop(); });
+    if (document.body.classList.contains('konami-open')) return;          /* the arcade handles its own Esc */
+    if (fx.stopOthers) fx.stopOthers('__none__');                         /* snap, jarvis, sakura, blueprint, gravity */
+    if (window.__skills && window.__skills.stopAll) window.__skills.stopAll(); /* fake client, RPG sheet */
+    if (window.__pcStop) window.__pcStop();                               /* post-credits */
+    var f4 = document.getElementById('fake404'); if (f4) f4.classList.remove('on');
+  });
 
   var SKIP = 'script,style,svg,iframe,canvas,textarea,input,noscript,.ue-layer,.ue-ui,.ue-keep,#hud,.konami-toast,#neertrackEmbed,.neertrack-embed,#loserEmbed,#amtronEmbed,#fake404,[aria-hidden="true"]';
   function tnodes(vis){
@@ -4697,9 +4727,31 @@ body.dn-open{ overflow:hidden; }
     if (O){ O._keep = true; O.classList.add('out'); setTimeout(function(){ O.remove(); }, 1800); }
   } });
 
+
+  /* ---- miles (spider-verse) ---- */
+  var SVW = ['THWIP!', 'ZIP!', 'WHAM!', 'SKRIT!', 'POW!', 'FWOOSH!', 'BAM!', 'SPLAT!'];
+  def('miles', { start:function(m){
+    var wipe = m.add(el('div', 'ue-layer sv-wipe')), d1 = m.add(el('div', 'ue-layer sv-dots')), d2 = m.add(el('div', 'ue-layer sv-dots c')), edge = m.add(el('div', 'ue-layer sv-edge'));
+    toast('Anyone can wear the mask. Not anyone can ship on Friday.');
+    wipe.animate([{ clipPath:'polygon(0 0,0 0,-30% 100%,-30% 100%)' }, { clipPath:'polygon(0 0,130% 0,100% 100%,-30% 100%)', offset:.45 }, { clipPath:'polygon(130% 0,130% 0,130% 100%,100% 100%)' }], { duration:reduce ? 10 : 1100, easing:'cubic-bezier(.7,0,.3,1)', fill:'forwards' });
+    m.later(function(){ body.classList.add('sv'); d1.classList.add('on'); d2.classList.add('on'); edge.classList.add('on'); }, reduce ? 0 : 480);
+    function pop(x, y, word){
+      var e = el('div', 'sv-pop'); e.textContent = word || pick(SVW); e.style.left = x + 'px'; e.style.top = y + 'px'; body.appendChild(e);
+      var r = rnd(-14, 14), c = pick(['#ffe14d', '#ff5fa2', '#4fd8ff', '#fff']); e.style.background = c;
+      e.animate([{ transform:'scale(.15) rotate(' + (r - 25) + 'deg)', opacity:0 }, { transform:'scale(1.15) rotate(' + r + 'deg)', opacity:1, offset:.22 }, { transform:'scale(1) rotate(' + r + 'deg)', opacity:1, offset:.7 }, { transform:'scale(1.25) rotate(' + r + 'deg)', opacity:0 }], { duration:950, easing:'ease-out' }).onfinish = function(){ e.remove(); };
+    }
+    if (reduce) return;
+    var lastY = scrollY, lastT = 0;
+    m.on(window, 'scroll', function(){
+      var now = performance.now(), dy = Math.abs(scrollY - lastY); if (dy < 220 || now - lastT < 1100 || cs()) return;
+      lastY = scrollY; lastT = now; pop(rnd(innerWidth*.12, innerWidth*.88), rnd(innerHeight*.2, innerHeight*.75));
+    }, { passive:true });
+    m.on(window, 'pointerdown', function(e){ if (cs()) return; var now = performance.now(); if (now - lastT < 350) return; lastT = now; pop(e.clientX, e.clientY, pick(['POW!', 'THWIP!', 'WHAM!', 'BAM!'])); }, true);
+  }, stop:function(m){ body.classList.remove('sv'); m.els.forEach(function(e){ m.fade(e, 900); }); } });
+
   /* ---------- wire up: typed words + console ---------- */
   if (fx.WORDS){
-    ['doom', 'loki', 'thanos', 'strange', 'wakanda', 'deadpool', 'groot', 'ironman', 'naruto', 'totoro', 'deathnote', 'multiverse'].forEach(function(w){ fx.WORDS[w] = function(){ toggle(w); }; });
+    ['doom', 'loki', 'thanos', 'strange', 'wakanda', 'deadpool', 'groot', 'ironman', 'naruto', 'totoro', 'deathnote', 'multiverse', 'miles', 'spiderverse'].forEach(function(w){ fx.WORDS[w] = function(){ toggle(w === 'spiderverse' ? 'miles' : w); }; });
   }
   if (window.secrets){
     var S = window.secrets;
@@ -4714,6 +4766,7 @@ body.dn-open{ overflow:hidden; }
     S.naruto = function(){ toggle('naruto'); return 'Believe it! 🍥'; };
     S.totoro = function(){ toggle('totoro'); return 'waiting for the bus ☔'; };
     S.deathnote = function(){ toggle('deathnote'); return 'write carefully 📓'; };
+    S.miles = function(){ toggle('miles'); return 'anyone can wear the mask 🕷️'; };
     S.multiverse = function(){ toggle('multiverse'); return 'variant detected 🌌'; };
   }
   window.__ue = { M:M, toggle:toggle };
