@@ -1,55 +1,90 @@
-# 👋 Himangshu Hazarika — Portfolio
+# ✦ Himangshu Hazarika
 
-UI/UX designer & frontend developer from Jorhat, Assam 🇮🇳
-Co-Founder of **The Design Walas**, a design studio for entrepreneurs and small businesses.
+**DESIGNS & SHIPS**
 
-🔗 **Live site:** [himangshuhazarika.github.io](https://himangshuhazarika.github.io)
+UI/UX + Product Designer, co-running **The Design Walas**.
+I design and build digital products that actually work for the business behind them.
 
----
-
-## 🎯 About
-
-- 🎨 UI/UX designer focused on design thinking, visual storytelling and real-world problem solving
-- 💻 Frontend developer building clean, production-grade interfaces
-- 🏢 Co-Founder, The Design Walas (TDW)
-
-## 📂 What's Inside
-
-- 🧑‍💼 Background and introduction
-- 🧩 **JalSetu case study**: a full Double Diamond walkthrough, opened in an in-page modal
-- 💼 Experience:
-  - Design Assistant, **Wayco** (Mar–Apr 2026)
-  - UI/UX Intern, **Zidio Dev** (Jan–Feb 2025)
-- 📬 Contact details
-
-## 🛠️ Tech Stack
-
-- HTML5
-- CSS3
-- Vanilla JavaScript
-- Hosted on GitHub Pages
-
-## 🚀 Run Locally
-
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/himangshuhazarika/himangshuhazarika.github.io.git
-   ```
-2. Open the folder:
-   ```bash
-   cd himangshuhazarika.github.io
-   ```
-3. Open `index.html` in your browser 🌐
-
-## 📬 Connect With Me
-
-- 🌍 Portfolio: [himangshuhazarika.github.io](https://himangshuhazarika.github.io)
-- 💼 LinkedIn: [himangshuhazarika020225](https://www.linkedin.com/in/himangshuhazarika020225/)
-- 📸 Instagram: [@ui.himangshu](https://www.instagram.com/ui.himangshu/)
-- 🎯 Behance: [himangshuhazarika](https://www.behance.net/himangshuhazarika)
-- 🏀 Dribbble: [himangshuhazarika004](https://dribbble.com/himangshuhazarika004)
-- 📧 Email: himangshu.hazarika004@gmail.com
+🔗 **Live:** [himangshuhazarika.github.io](https://himangshuhazarika.github.io)
 
 ---
 
-© Himangshu Hazarika. All rights reserved.
+## `SEC/01` ◈ HERO
+
+- 🎯 UI/UX Product Designer
+- 🏢 Co-Founder, The Design Walas
+- 📍 Assam, India
+- 🎓 B.Com in Human Resource Management, which gives me a commercial lens on every screen
+
+---
+
+## `SEC/02` ◈ CASE STUDIES
+
+- 💧 **NeerTrack** · Smart water utility app
+  - A concept Android app that gives Jorhat residents advance outage notice, a water quality indicator and a trackable way to report issues
+  - Double Diamond · 14-day sprint
+- 👕 **THE LOSER** · Fashion homepage redesign
+  - Built around loss and becoming: five design decisions, one rule, stay usable
+  - Desktop + mobile · 48 hours · Figma · unofficial, not affiliated
+- 🏛️ **AMTRON** · Government tech website
+  - Clearer structure and a responsive layout for the Assam Electronics Development Corporation site
+  - Self-initiated · redesign · untested
+- 🧵 **Subtl** · Minimalism, maximized
+  - A redesign of the Subtl Apparels store: minimal basics where you see the fabric, check the fit and pick a size
+  - Responsive web · AI-assisted build · Oct 2026
+
+---
+
+## `SEC/03` ◈ WEBSITES
+
+- 📸 **Photography Portfolio** → [khalidphotography.netlify.app](https://khalidphotography.netlify.app) ↗
+- 🎸 **The Blue Algae (Music Band)** → [thebluealgae.netlify.app](https://thebluealgae.netlify.app) ↗
+- 🎧 **LUNE (Music Producer)** → [lunemusic.netlify.app](https://lunemusic.netlify.app) ↗
+- 🛍️ **Subtl (E-commerce)** → [subtlclothing.wixsite.com/subtle](https://subtlclothing.wixsite.com/subtle) ↗
+
+---
+
+## `SEC/04` ◈ EXPERIENCE
+
+- **May 2026 – Present** · Co-Founder & Digital Design Associate, *The Design Walas*
+- **Mar – Apr 2026** · Design Apprentice, *Wayco* (Remote)
+- **Jan – Feb 2025** · UI/UX Designer Intern, *Zidio Dev* (Remote)
+- **2020 – 2024** · Freelance UI/UX Designer, *Independent* (Remote)
+
+---
+
+## `SEC/05` ◈ ABOUT
+
+- UI/UX and Product Designer with a B.Com in HRM
+- Co-Founder of a studio delivering branding, logos, print, websites and interface solutions for entrepreneurs and small ventures
+- I use AI tools in my process, but creative judgment stays human-led
+
+---
+
+## `SEC/06` ◈ SKILLS & TOOLS
+
+**Skills**
+- Problem Framing · UX Strategy · User Research · User Flows
+- Information Architecture · Interaction Design · Usability Test Planning
+- Iterative Design · Design Systems · Accessibility (Basic)
+- Front-end Prototyping · Responsive Design
+
+**Tools**
+- Figma · Canva · Adobe Premiere Pro · Wix · HTML / CSS / JS · Git / GitHub
+
+---
+
+## `SEC/07` ◈ CONTACT
+
+**Let's work together.** Open to freelance projects, internships, studio work and full-time roles.
+
+- 🌍 [Portfolio](https://himangshuhazarika.github.io)
+- 💼 [LinkedIn](https://www.linkedin.com/in/himangshuhazarika020225/)
+- 📸 [Instagram](https://www.instagram.com/ui.himangshu/)
+- 🎯 [Behance](https://www.behance.net/himangshuhazarika)
+- 🏀 [Dribbble](https://dribbble.com/himangshuhazarika004)
+- 📧 himangshu.hazarika004@gmail.com
+
+---
+
+© 2026 Himangshu Hazarika · Built with HTML, CSS & JS, along with Claude
