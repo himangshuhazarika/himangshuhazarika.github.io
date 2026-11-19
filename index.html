@@ -1011,6 +1011,22 @@
   .theme-toggle:hover{ --pull:5px; transform:none; border-color:var(--accent); color:var(--accent); box-shadow:0 8px 22px rgba(0,0,0,.14), 0 0 0 4px var(--accent-soft); }
   .theme-toggle:active{ transform:none; }
   .theme-toggle.swing{ animation:cordSwing 1.2s ease-out; }
+  .theme-toggle.shake{ animation:cordShake 1.4s ease-out; }
+  @keyframes cordShake{
+    0%{ transform:rotate(0); }
+    10%{ transform:rotate(calc(24deg * var(--shake, 1))); } 24%{ transform:rotate(calc(-20deg * var(--shake, 1))); }
+    38%{ transform:rotate(calc(14deg * var(--shake, 1))); } 52%{ transform:rotate(calc(-9deg * var(--shake, 1))); }
+    68%{ transform:rotate(calc(5deg * var(--shake, 1))); } 84%{ transform:rotate(calc(-2deg * var(--shake, 1))); }
+    100%{ transform:rotate(0); }
+  }
+  .theme-nudge{
+    position:fixed; z-index:5599; transform:translateY(-50%) translateX(8px); opacity:0; pointer-events:none; white-space:nowrap;
+    font:600 11.5px/1 'IBM Plex Mono',ui-monospace,monospace; letter-spacing:.02em;
+    padding:9px 13px; border-radius:20px; background:var(--ink); color:var(--bg);
+    box-shadow:0 6px 18px rgba(0,0,0,.18);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .theme-nudge.show{ opacity:1; transform:translateY(-50%) translateX(0); }
   @keyframes cordSwing{ 0%{ transform:rotate(0); } 18%{ transform:rotate(8deg); } 40%{ transform:rotate(-5.5deg); } 62%{ transform:rotate(3deg); } 82%{ transform:rotate(-1.2deg); } 100%{ transform:rotate(0); } }
   /* inside a full-screen case study the corner belongs to the "Back" bar: sit next to it, no cord */
   body.cs-page-open .theme-toggle{ top:15px !important; right:236px; width:36px; height:36px; transform-origin:center; }
@@ -1020,7 +1036,7 @@
     .theme-toggle::before{ height:calc(38px + var(--pull, 0px)); }
     body.cs-page-open .theme-toggle{ display:none; }
   }
-  @media (prefers-reduced-motion: reduce){ .theme-toggle, .theme-toggle::before{ transition:none; } .theme-toggle.swing{ animation:none; } }
+  @media (prefers-reduced-motion: reduce){ .theme-toggle, .theme-toggle::before{ transition:none; } .theme-toggle.swing, .theme-toggle.shake{ animation:none; } .theme-nudge{ transition:none; } }
 
   /* ---- Blockbuster eggs: snap / jarvis / sakura / post-credits ---- */
   .snap-gone{ opacity:0 !important; filter:blur(7px) !important; pointer-events:none !important; transition:opacity .9s ease, filter .9s ease !important; }
@@ -1408,7 +1424,7 @@ body.cs-page-open .bottom-dock{ z-index:5500; }
   html.gsap-on .photo-frame, html.gsap-on .corner{ animation:none; }
 }
 </style>
-<script>(function(){try{var t=null;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="dark"&&t!=="light"){t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
+<script>(function(){try{var t=null;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="dark"&&t!=="light"){t="light"}document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
 <style id="egg-refinements">
 footer#contact{ padding-bottom:120px; }
 
@@ -2194,6 +2210,8 @@ footer#contact{ padding-bottom:120px; }
       setTimeout(() => {
         loader.classList.add('hidden');
         document.body.classList.remove('loading');
+        window.__loaderDone = true;
+        document.dispatchEvent(new Event('loader-hidden'));
       }, wait);
     }
     if (document.readyState === 'complete') {
@@ -3182,12 +3200,61 @@ if (nsEmbedEl) {
     }
     applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', true, true);
   });
-  try {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e){
-      var saved = null; try { saved = localStorage.getItem('theme'); } catch(_){}
-      if (!saved) applyTheme(e.matches ? 'dark' : 'light', false, true);
-    });
-  } catch(e){}
+  /* default is always light; the device's colour scheme is deliberately ignored */
+
+  /* ---------- shake the cord when the phone shakes ---------- */
+  (function(){
+    if (reduce0 || !('DeviceMotionEvent' in window)) return;
+    var last = 0, lastShake = 0, THRESH = 16;   // m/s² change between samples
+    var px = null, py = null, pz = null;
+    function onMotion(e){
+      var a = e.accelerationIncludingGravity; if (!a) return;
+      var x = a.x || 0, y = a.y || 0, z = a.z || 0;
+      if (px !== null) {
+        var d = Math.abs(x - px) + Math.abs(y - py) + Math.abs(z - pz);
+        var now = Date.now();
+        if (d > THRESH && now - lastShake > 900) { lastShake = now; shakeCord(Math.min(1.6, d / 30)); }
+      }
+      px = x; py = y; pz = z;
+    }
+    function shakeCord(power){
+      if (document.body.classList.contains('cs-page-open')) return;
+      tbtn.style.setProperty('--shake', power.toFixed(2));
+      tbtn.classList.remove('swing', 'shake'); void tbtn.offsetWidth; tbtn.classList.add('shake');
+      setTimeout(function(){ tbtn.classList.remove('shake'); }, 1500);
+    }
+    function listen(){ window.addEventListener('devicemotion', onMotion, { passive:true }); }
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      // iOS 13+: permission must be asked from a user gesture; do it on the first touch
+      var ask = function(){
+        document.removeEventListener('touchend', ask, true); document.removeEventListener('click', ask, true);
+        DeviceMotionEvent.requestPermission().then(function(r){ if (r === 'granted') listen(); }).catch(function(){});
+      };
+      document.addEventListener('touchend', ask, true); document.addEventListener('click', ask, true);
+    }
+    listen();   // harmless where permission is still pending; starts delivering once granted
+  })();
+
+  /* ---------- 1-second nudge beside the toggle, right after the loading screen ---------- */
+  (function(){
+    var done = false;
+    function nudge(){
+      if (done) return; done = true;
+      if (document.body.classList.contains('cs-page-open')) return;
+      var hint = document.createElement('div');
+      hint.className = 'theme-nudge'; hint.setAttribute('aria-hidden', 'true');
+      hint.textContent = 'Dark mode \u2192';
+      document.body.appendChild(hint);
+      var r = tbtn.getBoundingClientRect();
+      hint.style.top = Math.round(r.top + r.height / 2) + 'px';
+      hint.style.right = Math.round(window.innerWidth - r.left + 10) + 'px';
+      if (!reduce0) { tbtn.classList.remove('swing', 'shake'); void tbtn.offsetWidth; tbtn.style.animationDuration = '2.4s'; tbtn.classList.add('swing'); }
+      requestAnimationFrame(function(){ hint.classList.add('show'); });
+      setTimeout(function(){ hint.classList.remove('show'); }, 2400);
+      setTimeout(function(){ hint.remove(); tbtn.classList.remove('swing'); tbtn.style.animationDuration = ''; }, 3200);
+    }
+    if (window.__loaderDone) nudge(); else document.addEventListener('loader-hidden', nudge, { once:true });
+  })();
 
   /* ---------- iframe case studies (THE LOSER): lazy-load on first open ---------- */
   var FRAME_FIX = '<script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"";if(h.charAt(0)==="#"){e.preventDefault();var t=h.length>1&&document.getElementById(h.slice(1));if(t)t.scrollIntoView({behavior:"smooth"});else window.scrollTo({top:0,behavior:"smooth"});}else if(!/^(mailto:|tel:|javascript:)/i.test(h)){a.target="_blank";a.rel="noopener";}},true);<\/script>';
